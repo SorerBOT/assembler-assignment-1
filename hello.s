@@ -35,6 +35,10 @@ game_over_win_str:
 	.string "Congratz! You won %ld rounds!\n"
 double_or_nothing_str:
 	.string "Double or nothing! Would you like to continue to another round? (y/n) "
+lower_str:
+	.string "Your guess was below the actual number ...\n"
+higher_str:
+	.string "Your guess was above the actual number ...\n"
 # formats
 quad_fmt:
 	.string "%ld"
@@ -228,6 +232,7 @@ play_guess:
 		je		epilogue_1
 		movq	$incorrect_str, %rdi
 		call	printf
+		call	easy_mode
 
 	# epilogue
 	epilogue_1:
@@ -296,3 +301,35 @@ initialise_current_random_number:
 	movq	%rbp, %rsp
 	popq	%rbp
 	ret
+
+.globl	easy_mode
+.type	easy_mode, @function
+easy_mode:
+	# prologue
+	pushq	%rbp
+	movq	%rsp, %rbp
+
+	movb	is_easy_mode_char(%rip), %al
+	cmpb	$'y', %al
+	je		yes_2
+	jmp 	epilogue_4
+
+	yes_2:
+		movq	current_rnd_number(%rip), %rax
+		cmpq	user_guess(%rip), %rax
+		jg		printLower
+		jl		printHigher
+
+		printLower:
+			movq	$lower_str, %rdi
+			call	printf
+			jmp epilogue_4
+		printHigher:
+			movq	$higher_str, %rdi
+			call	printf
+			jmp epilogue_4
+	# epilogue
+	epilogue_4:
+		movq	%rbp, %rsp
+		popq	%rbp
+		ret
