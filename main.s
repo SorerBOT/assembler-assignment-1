@@ -124,13 +124,12 @@ get_mod_N:
 	movq	%rsp, %rbp
 
 	# Prepare for division
-	movq	%rdi, %rax         # Dividend in %rax
-	xorq	%rdx, %rdx         # Clear %rdx (upper half of dividend for unsigned division)
-	divq	N(%rip)            # Divide %rdx:%rax by N
-	                          # Quotient in %rax, remainder in %rdx
+	movq	%rdi, %rax
+	xorq	%rdx, %rdx
+	divq	N(%rip)
 
 	# Return remainder
-	movq	%rdx, %rax         # Move remainder to %rax (return value)
+	movq	%rdx, %rax
 
 	# Epilogue
 	movq	%rbp, %rsp
